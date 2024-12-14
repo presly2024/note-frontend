@@ -1,7 +1,8 @@
 import { MdSearch } from "react-icons/md";
 import Profile from "../profile/Profile";
+import { UserType } from "../../utils/models";
 
-const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) => {
+const Navbar = ({ user, onLogout }: { user: UserType; onLogout: () => void }) => {
      return (
           <header className="sticky top-0 left-0 px-5 py-2 shadow-md w-full bg-white flex items-center justify-between">
                <h1 className="text-lg">Notes</h1>

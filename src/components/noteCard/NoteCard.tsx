@@ -1,25 +1,18 @@
 import { MdDelete, MdEdit, MdOutlinePushPin } from "react-icons/md";
+import { NoteType } from "../../utils/models";
 
 const NoteCard = ({
-     title,
-     content,
-     tags,
-     date,
-     isPinned,
+     note,
      editNote,
      deleteNote,
      togglePinned,
 }: {
-     title: string;
-     content: string;
-     tags: string[];
-     date: string;
-     isPinned: boolean;
+     note: NoteType
      editNote: () => void;
      deleteNote: () => void;
      togglePinned: () => void;
 }) => {
-     const formatDate = (value: string) => {
+     const formatDate = (value: string | Date) => {
           const date = new Date(value);
           const options: Intl.DateTimeFormatOptions = {
                year: "numeric",
@@ -33,6 +26,7 @@ const NoteCard = ({
           const formatedDate = date.toLocaleString("US", options);
           return formatedDate;
      };
+     const { title, date, isPinned, tags, content } = note
      return (
           <div className="p-4 bg-white shadow-md hover:shadow-xl flex flex-col gap-2">
                <div className="flex items-center justify-between">
@@ -44,9 +38,8 @@ const NoteCard = ({
                     </div>
                     <MdOutlinePushPin
                          onClick={togglePinned}
-                         className={`cursor-pointer ${
-                              isPinned ? "text-primary" : "text-slate-400"
-                         }`}
+                         className={`cursor-pointer ${isPinned ? "text-primary" : "text-slate-400"
+                              }`}
                          size={20}
                     />
                </div>
@@ -55,13 +48,13 @@ const NoteCard = ({
                     <div className="flex flex-wrap gap-1">
                          {tags.length > 0
                               ? tags.map((tag, index) => (
-                                     <div
-                                          className="p-1 text-sm bg-slate-200 rounded-sm"
-                                          key={tag + index}
-                                     >
-                                          #{tag}
-                                     </div>
-                                ))
+                                   <div
+                                        className="p-1 text-sm bg-slate-200 rounded-sm"
+                                        key={tag + index}
+                                   >
+                                        #{tag}
+                                   </div>
+                              ))
                               : ""}
                     </div>
                     <div className="flex items-center gap-2">

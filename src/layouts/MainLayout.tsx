@@ -1,16 +1,18 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
+import AuthNavbar from "../components/authNavbar/AuthNavbar";
+import { UserType } from "../utils/models";
 
 const MainLayout = ({
      userInfo,
      onLogout,
 }: {
-     userInfo: any;
+     userInfo: UserType | null;
      onLogout: () => void;
 }) => {
      return (
           <>
-               {<Navbar user={userInfo} onLogout={onLogout} />}
+               {userInfo ? <Navbar user={userInfo} onLogout={onLogout} /> : <AuthNavbar />}
                <Outlet />
           </>
      );

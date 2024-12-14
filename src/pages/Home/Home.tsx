@@ -3,23 +3,27 @@ import NoteCard from "../../components/noteCard/NoteCard";
 import Modal from "react-modal";
 import NoteForm from "../../components/noteForm/NoteForm";
 import { useEffect, useState } from "react";
-import { ModalInfo } from "../../utils/models";
+import { ModalInfo, NoteType, UserType } from "../../utils/models";
 import axiosInstance from "../../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
-const Home = ({ setUserInfo }: { setUserInfo: any }) => {
+const Home = ({ setUserInfo }: { setUserInfo: (user: UserType) => void }) => {
      const navigate = useNavigate();
-     const [notes, setNotes] = useState<any>([]);
+     const [notes, setNotes] = useState<NoteType[]>([]);
      const getUserInfo = async () => {
           try {
                const response = await axiosInstance.get("/user/");
                if (response) {
                     setUserInfo(response.data.user);
                }
-          } catch (error: any) {
-               if (error.response.status == 401) {
-                    localStorage.clear();
-                    navigate("/login");
+          } catch (error) {
+               console.log(error)
+               if (error instanceof AxiosError) {
+                    if (error?.response?.status == 401) {
+                         localStorage.clear();
+                         navigate("/login");
+                    }
                }
           }
      };
@@ -30,11 +34,15 @@ const Home = ({ setUserInfo }: { setUserInfo: any }) => {
                if (response) {
                     setNotes(response.data);
                }
-          } catch (error: any) {
-               if (error.response.status == 401) {
-                    localStorage.clear();
-                    navigate("/login");
+          } catch (error) {
+               console.log(error)
+               if (error instanceof AxiosError) {
+                    if (error?.response?.status == 401) {
+                         localStorage.clear();
+                         navigate("/login");
+                    }
                }
+
           }
      };
 
@@ -57,37 +65,40 @@ const Home = ({ setUserInfo }: { setUserInfo: any }) => {
           });
      const deleteNote = async (id: string) => {
           try {
-               const response: any = await axiosInstance.delete(
+               const response = await axiosInstance.delete(
                     `/note/delete/${id}`
                );
                const { _id } = response.data;
-               setNotes((prev: any) => {
+               setNotes((prev) => {
                     const newNotes = prev.filter(
-                         (note: any) => note._id !== _id
+                         (note) => note._id !== _id
                     );
                     return newNotes;
                });
-          } catch (error: any) {
-               if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.msg
-               ) {
-                    alert(error.response.data.msg);
-               } else {
-                    alert("An unexpected error occured");
+          } catch (error) {
+               console.log(error)
+               if (error instanceof AxiosError) {
+                    if (
+                         error.response &&
+                         error.response.data &&
+                         error.response.data.msg
+                    ) {
+                         alert(error.response.data.msg);
+                    } else {
+                         alert("An unexpected error occured");
+                    }
                }
           }
      };
 
      const togglePinned = async (id: string) => {
           try {
-               const response: any = await axiosInstance.patch(
+               const response = await axiosInstance.patch(
                     `/note/pin/${id}`
                );
                const newNote = response.data;
-               setNotes((prev: any) => {
-                    const newNotes = prev.map((note: any) => {
+               setNotes((prev) => {
+                    const newNotes = prev.map((note) => {
                          if (note._id === newNote?._id) {
                               note = { ...newNote };
                               return note;
@@ -96,15 +107,18 @@ const Home = ({ setUserInfo }: { setUserInfo: any }) => {
                     });
                     return newNotes;
                });
-          } catch (error: any) {
-               if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.msg
-               ) {
-                    alert(error.response.data.msg);
-               } else {
-                    alert("An unexpected error occured");
+          } catch (error) {
+               console.log(error)
+               if (error instanceof AxiosError) {
+                    if (
+                         error.response &&
+                         error.response.data &&
+                         error.response.data.msg
+                    ) {
+                         alert(error.response.data.msg);
+                    } else {
+                         alert("An unexpected error occured");
+                    }
                }
           }
      };
@@ -127,29 +141,20 @@ const Home = ({ setUserInfo }: { setUserInfo: any }) => {
                </Modal>
 
                {notes.length > 0 ? (
-                    <div className="grid md:grid-cols-2 gap-5 p-5">
-                         {notes.map((note: any) => (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-5">
+                         {notes.map((note) => (
                               <NoteCard
-                                   key={note._id}
-                                   content={note.content}
-                                   isPinned={note.isPinned}
-                                   date={note.date}
-                                   tags={note.tags}
-                                   title={note.title}
+                                   key={note._id as string}
+                                   note={note}
                                    editNote={() =>
                                         setShowAddEditModal({
                                              type: "edit",
-                                             data: {
-                                                  id: note._id,
-                                                  title: note.title,
-                                                  content: note.content,
-                                                  tags: note.tags,
-                                             },
+                                             data: note,
                                              show: true,
                                         })
                                    }
-                                   deleteNote={() => deleteNote(note._id)}
-                                   togglePinned={() => togglePinned(note._id)}
+                                   deleteNote={() => deleteNote(note._id as string)}
+                                   togglePinned={() => togglePinned(note._id as string)}
                               />
                          ))}
                     </div>

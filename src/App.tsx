@@ -10,9 +10,13 @@ import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 import MainLayout from "./layouts/MainLayout";
 import { useState } from "react";
+import { UserType } from "./utils/models";
 
 const App = () => {
-     const [userInfo, setUserInfo] = useState<any>(null);
+
+     const [userInfo, setUserInfo] = useState<UserType | null>(null);
+
+
 
      const onLogout = () => {
           localStorage.clear();

@@ -2,6 +2,7 @@ import React, { SyntheticEvent, useState } from "react";
 import PasswordInput from "../../components/passwordInput/PasswordInput";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import { AxiosError } from "axios";
 
 const Login = () => {
      const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Login = () => {
           if (!password) return setError("password required");
 
           try {
-               const response: any = await axiosInstance.post("/user/login", {
+               const response = await axiosInstance.post("/user/login", {
                     email,
                     password,
                });
@@ -41,15 +42,17 @@ const Login = () => {
                     localStorage.setItem("token", response?.data.token);
                     navigate("/");
                }
-          } catch (error: any) {
-               if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.msg
-               ) {
-                    setError(error.response.data.msg);
-               } else {
-                    setError("An unexpected error occured");
+          } catch (error) {
+               if (error instanceof AxiosError) {
+                    if (
+                         error.response &&
+                         error.response.data &&
+                         error.response.data.msg
+                    ) {
+                         setError(error.response.data.msg);
+                    } else {
+                         setError("An unexpected error occured");
+                    }
                }
           }
      };
