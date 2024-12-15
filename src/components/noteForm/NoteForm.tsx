@@ -1,17 +1,20 @@
 import { SyntheticEvent, useState } from "react";
 import { MdAdd, MdClose } from "react-icons/md";
 import Tag from "../tag/Tag";
-import { ModalInfo } from "../../utils/models";
+import { ModalInfo, NoteType } from "../../utils/models";
 import axiosInstance from "../../utils/axiosInstance";
+import { AxiosError } from "axios";
 
 const NoteForm = ({
      onCloseModal,
      modalInfo,
      setNotes,
+     notes
 }: {
      onCloseModal: () => void;
      modalInfo: ModalInfo;
-     setNotes: any;
+     setNotes: (notes: NoteType[]) => void;
+     notes: NoteType[]
 }) => {
      const [tag, setTag] = useState("");
      const [tags, setTags] = useState<string[]>(() => {
@@ -54,25 +57,29 @@ const NoteForm = ({
           };
 
           try {
-               const response: any = await axiosInstance.post(
+               const response = await axiosInstance.post(
                     "/note/create",
                     note
                );
                const newNote = response.data;
-               setNotes((prev: any) => [...prev, newNote]);
+               setNotes([...notes, newNote]);
                setContent("");
                setTitle("");
                setTags([]);
                setError("");
-          } catch (error: any) {
-               if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.msg
-               ) {
-                    setError(error.response.data.msg);
-               } else {
-                    setError("An unexpected error occured");
+          } catch (error) {
+               console.log(error)
+               if (error instanceof AxiosError) {
+
+                    if (
+                         error.response &&
+                         error.response.data &&
+                         error.response.data.msg
+                    ) {
+                         setError(error.response.data.msg);
+                    } else {
+                         setError("An unexpected error occured");
+                    }
                }
           }
      };
@@ -90,34 +97,34 @@ const NoteForm = ({
           };
 
           try {
-               const response: any = await axiosInstance.put(
-                    `/note/edit/${modalInfo?.data?.id}`,
+               const response = await axiosInstance.put(
+                    `/note/edit/${modalInfo?.data?._id}`,
                     note
                );
                const newNote = response.data;
-               setNotes((prev: any) => {
-                    const newNotes = prev.map((note: any) => {
-                         if (note._id === newNote?._id) {
-                              note = { ...newNote };
-                              return note;
-                         }
+               const newNotes = notes.map((note) => {
+                    if (note._id === newNote?._id) {
+                         note = { ...newNote };
                          return note;
-                    });
-                    return newNotes;
-               });
+                    }
+                    return note;
+               })
+               setNotes(newNotes);
                setContent("");
                setTitle("");
                setTags([]);
                setError("");
-          } catch (error: any) {
-               if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.msg
-               ) {
-                    setError(error.response.data.msg);
-               } else {
-                    setError("An unexpected error occured");
+          } catch (error) {
+               if (error instanceof AxiosError) {
+                    if (
+                         error.response &&
+                         error.response.data &&
+                         error.response.data.msg
+                    ) {
+                         setError(error.response.data.msg);
+                    } else {
+                         setError("An unexpected error occured");
+                    }
                }
           }
      };
@@ -186,14 +193,14 @@ const NoteForm = ({
                          <div className="flex flex-wrap gap-1 mb-[10px]">
                               {tags.length > 0
                                    ? tags.map((tag, index) => (
-                                          <Tag
-                                               key={tag + index}
-                                               tag={tag}
-                                               handleRemoveTag={() =>
-                                                    handleRemoveTag(tag)
-                                               }
-                                          />
-                                     ))
+                                        <Tag
+                                             key={tag + index}
+                                             tag={tag}
+                                             handleRemoveTag={() =>
+                                                  handleRemoveTag(tag)
+                                             }
+                                        />
+                                   ))
                                    : ""}
                          </div>
                          <div className="flex items-center gap-2">

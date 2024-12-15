@@ -131,10 +131,11 @@ const Home = ({ setUserInfo }: { setUserInfo: (user: UserType) => void }) => {
                     style={{
                          overlay: { backgroundColor: "rgba(0, 0, 0, 0.2)" },
                     }}
-                    className="bg-white w-[80%] mx-auto max-h-3/4 mt-48 rounded-lg overflow-hidden"
+                    className="bg-white max-w-md w-full mx-auto max-h-3/4 mt-48 rounded-lg overflow-hidden"
                >
                     <NoteForm
-                         setNotes={setNotes}
+                         setNotes={(notes: NoteType[]) => setNotes(notes)}
+                         notes={notes}
                          modalInfo={showAddEditModal}
                          onCloseModal={onCloseModal}
                     />
