@@ -4,7 +4,7 @@ import { UserType } from "../../utils/models";
 
 const Navbar = ({ user, onLogout }: { user: UserType; onLogout: () => void }) => {
      return (
-          <header className="sticky top-0 left-0 px-5 py-2 shadow-md w-full bg-white flex items-center justify-between">
+          <header className="sticky top-0 left-0 p-5 shadow-md w-full bg-white flex items-center justify-between">
                <h1 className="text-lg">Notes</h1>
                <div className="items-center gap-2 bg-slate-200 w-96 px-5 rounded-lg hidden sm:flex">
                     <input
